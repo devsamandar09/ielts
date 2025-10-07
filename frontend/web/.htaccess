@@ -1,0 +1,9 @@
+RewriteEngine On
+
+RewriteBase /frontend/web/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L]
+
+AddDefaultCharset utf-8

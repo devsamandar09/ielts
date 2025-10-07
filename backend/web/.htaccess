@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Root'ni to'g'ri ko'rsatish
+RewriteBase /backend/web/
+
+# Agar so'ralgan fayl yoki papka mavjud bo'lmasa – index.php ga yo'naltir
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L]
+
+# UTF-8 kodlash
+AddDefaultCharset utf-8
