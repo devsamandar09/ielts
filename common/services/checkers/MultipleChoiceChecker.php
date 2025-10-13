@@ -1,7 +1,8 @@
 <?php
 
-namespace common\services;
+namespace common\services\checkers;
 
+use common\services\QuestionChecker;
 use common\models\Question;
 
 class MultipleChoiceChecker extends QuestionChecker

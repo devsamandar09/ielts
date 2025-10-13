@@ -210,4 +210,22 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
+    public function updateLastLogin()
+    {
+        $this->last_login_at = date('Y-m-d H:i:s'); // joriy vaqtni yozadi
+        $this->save(false); // validatsiyasiz saqlaydi
+    }
+    public function getFullName()
+    {
+        // Agar modelda first_name va last_name ustunlari mavjud bo‘lsa:
+        if (!empty($this->first_name) && !empty($this->last_name)) {
+            return $this->first_name . ' ' . $this->last_name;
+        }
+
+        // Agar faqat username bo‘lsa
+        return $this->username ?? 'User';
+    }
+
+
 }
+

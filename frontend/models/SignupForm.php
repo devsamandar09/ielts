@@ -14,7 +14,8 @@ class SignupForm extends Model
     public $username;
     public $email;
     public $password;
-
+    public $first_name;
+    public $last_name;
 
     /**
      * {@inheritdoc}
@@ -22,26 +23,38 @@ class SignupForm extends Model
     public function rules()
     {
         return [
-            ['username', 'trim'],
-            ['username', 'required'],
-            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
-            ['username', 'string', 'min' => 2, 'max' => 255],
+            [['username', 'email', 'password', 'first_name', 'last_name'], 'required'],
+            [['username'], 'trim'],
+            [['username'], 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            [['username'], 'string', 'min' => 2, 'max' => 255],
 
-            ['email', 'trim'],
-            ['email', 'required'],
-            ['email', 'email'],
-            ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
+            [['email'], 'trim'],
+            [['email'], 'email'],
+            [['email'], 'string', 'max' => 255],
+            [['email'], 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
 
-            ['password', 'required'],
-            ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
+            [['password'], 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
+
+            [['first_name', 'last_name'], 'string', 'max' => 100],
         ];
     }
 
     /**
-     * Signs user up.
-     *
-     * @return bool whether the creating new account was successful and email was sent
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'username' => 'Username',
+            'email' => 'Email',
+            'password' => 'Password',
+            'first_name' => 'First Name',
+            'last_name' => 'Last Name',
+        ];
+    }
+
+    /**
+     * Signs user up
      */
     public function signup()
     {
@@ -52,29 +65,13 @@ class SignupForm extends Model
         $user = new User();
         $user->username = $this->username;
         $user->email = $this->email;
+        $user->first_name = $this->first_name;
+        $user->last_name = $this->last_name;
+        $user->role = User::ROLE_USER;
+        $user->status = User::STATUS_ACTIVE;
         $user->setPassword($this->password);
         $user->generateAuthKey();
-        $user->generateEmailVerificationToken();
 
-        return $user->save()&& $this->sendEmail($user);
-    }
-
-    /**
-     * Sends confirmation email to user
-     * @param User $user user model to with email should be sent
-     * @return bool whether the email was sent
-     */
-    protected function sendEmail($user)
-    { 
-        return Yii::$app
-            ->mailer
-            ->compose(
-                ['html' => 'emailVerify-html', 'text' => 'emailVerify-text'],
-                ['user' => $user]
-            )
-            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'])
-            ->setTo($this->email)
-            ->setSubject('Account registration at ' . Yii::$app->name)
-            ->send();
+        return $user->save() ? $user : null;
     }
 }

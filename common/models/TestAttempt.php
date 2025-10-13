@@ -2,10 +2,6 @@
 
 namespace common\models;
 
-class TestAttamp
-{
-
-}
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
